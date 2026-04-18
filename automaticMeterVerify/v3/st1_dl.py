@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 # 阶段一：数据解析与图片下载
 # Python 3.8
+'''json的格式：
+{
+  "data": [
+    { "meterID": "710300011", "currentReading": 533.00, ... },
+    { "meterID": "710300022", "currentReading": 120.00, ... }
+  ],
+  "draw": 3,
+  "recordsTotal": 1968
+}
+'''
 
 import json
 import requests
@@ -20,11 +30,19 @@ def main():
 
     try:
         with open(RAW_JSON_FILE, 'r', encoding='utf-8') as f:
+        # with会在离开划定的区域后，立马f.close()，依靠缩进判定
+        # open(filename, r\w\a(append) mode, encoding(utf\GBK不能读中文)
             data = json.load(f)
+        #json.load(f)会把f给翻译成python内部数据结构，比如字典型{}或列表[]
             records = data.get('data', data) if isinstance(data, dict) else data
+        # 判定data.get('data', data)是不是字典型
+        #如果是字典型就找找里面键名叫'data'的，找到就把键名为'data'的东西的值拉出来给records
+        #因为有些json是{"data": [{"id": 1}, {"id": 2}]}这个样子（比如这个项目的raw_data.json就这样）
+        
     except Exception as e:
         print(f"读取 {RAW_JSON_FILE} 失败，请确认文件是否存在且为合法 JSON: {e}")
         return
+    #try区域内的任意失败，则执行，e作为错误信息
 
     tasks = []
     print(f"成功解析数据，共找到 {len(records)} 条记录。开始下载图片...")
@@ -34,15 +52,19 @@ def main():
         target_val = item.get("currentReading")
         photo_path = item.get("photoPath")
         customer_name = item.get("customerName", "未知用户")
+        #没错，字典里的{1:k1,2:k2,...}都是键-值对应的
         
-        # 如果需要过滤状态，把下面两行取消注释
+        # 如果需要过滤状态，就看着加
         status = item.get("meterReadingFlagName", "")
         if status != "正常": continue
+        # "meterReadingFlagName":"\u6B63\u5E38" | "1"
+        # encoding=utf-8会翻译这个为“正常”
+        # 很神秘就是了
 
 
         # 修改 st1 里的读取逻辑
         status = item.get("meterReadingFlagName", "未知") # 拿不到就默认是“未知”
-        # 或者干脆不判断它，直接下载，反正你有 meterID 就能下
+        # 或者干脆不判断它，直接下载，反正有 meterID 就能下
         
         if not photo_path or "null" in str(photo_path):
             print(f"表号 {meter_id} 无照片，跳过。")
