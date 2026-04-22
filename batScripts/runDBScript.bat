@@ -15,11 +15,19 @@ set "PYFILE=%~1"
 set "CURDIR=%~dp0"
 :: %~dp0 stands for current script's absolute directory
 
+
+:: 启动 NPM Server
+start "NPM Server" powershell -NoExit -Command "$Host.UI.RawUI.WindowTitle='NPM Server'; cd '%CURDIR%' ; npm start"
+
+:: 启动 Python Script
+start "Python Script" powershell -NoExit -Command "$Host.UI.RawUI.WindowTitle='Python Script'; python '%PYFILE%'"
+
 :: 启动 npm start 的 PowerShell 窗口
-start "NPM Server" powershell -NoExit -Command "title 'NPM Server'; cd '%CURDIR%' ; npm start"
+::start "NPM Server" powershell -NoExit -Command "title 'NPM Server'; cd '%CURDIR%' ; npm start"
 
 :: 启动 Python 脚本的 PowerShell 窗口
-start "Python Script" powershell -NoExit -Command "title 'python script'; python '%PYFILE%'"
+::start "Python Script" powershell -NoExit -Command "title 'python script'; python '%PYFILE%'"
+::second half are just cmd only, powershell not support this
 
 endlocal
 
