@@ -10,7 +10,7 @@ cls
 if "%~1"=="" ( ::%1代表第一个参数，如果拖某个文件过来，那么第一个参数就是这个文件的绝对路径，~用来去除两边的双引号
     echo [错误] 请将需要识别的报表照片拖到此文件上！
     pause
-    exit
+    exit ::after user read the pause(pls press any key to continue...), this exit gonna shut the script
 )
 
 echo ------------------------------------------
