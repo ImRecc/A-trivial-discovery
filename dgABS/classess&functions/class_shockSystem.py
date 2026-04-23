@@ -8,6 +8,11 @@ class ShockSystem:
         self.client_id, self.target_id = None, None
         self.local_ip = "192.168.1.6" # ！！！确保是内网IP！！！
         # localhost? 懒得用
+    ''' def __init__()， python内部的函数
+    会在挂载的类被加载时运行
+    self参数代表这里是 class shockSystem
+    如果有class A,B,C,他们自己也可以继续def __init__(self),来有不同的操作
+    '''
 
     def connect(self, ui_app):
         try:
