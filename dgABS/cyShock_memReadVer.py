@@ -27,7 +27,8 @@ class ShockSystem:
         self.is_paused = False
         self.ws = None
         self.client_id, self.target_id = None, None
-        self.local_ip = "192.168.1.6" # ！！！确保是你的内网IP！！！
+        self.local_ip = "192.168.1.6" # ！！！确保是内网IP！！！
+        # localhost? 懒得用
 
     def connect(self, ui_app):
         try:
