@@ -18,6 +18,9 @@ class ShockSystem:
         try:
             self.ws = websocket.create_connection("ws://127.0.0.1:9999/")
             self.client_id = json.loads(self.ws.recv()).get('clientId')
+            #self.ws.recv()， 没错，received的是json
+            #json.loads(...), 是的，python看不明白json，但是能load成字典
+            #json.loads(...).get('clientId')， 字典有get这个操作，读键对的值
             qr_text = f"https://www.dungeon-lab.com/app-download.php#DGLAB-SOCKET#ws://{self.local_ip}:9999/{self.client_id}"
             ui_app.show_qr(qr_text)
             
@@ -30,7 +33,7 @@ class ShockSystem:
                     break
         except Exception as e: print(f"网络异常: {e}")
 
-    def connect(self, ui_app):
+   ''' def connect(self, ui_app):
         try:
             self.ws = websocket.create_connection("ws://127.0.0.1:9999/")
             # 视觉版获取 ID 的方式
@@ -46,6 +49,7 @@ class ShockSystem:
                     ui_app.on_ready()
                     break
         except Exception as e: print(f"网络异常: {e}")
+        '''
 
     def send(self, wave_pool, duration, strength_raw, channel_mode):
         """
