@@ -31,9 +31,24 @@ file_lock = threading.Lock()
 def get_access_token():
     url = "https://aip.baidubce.com/oauth/2.0/token"
     params = {"grant_type": "client_credentials", "client_id": BAIDU_API_KEY, "client_secret": BAIDU_SECRET_KEY}
+    #baidu api要求把目的、id、密钥在网址后传递过去
     try:
         response = requests.get(url, params=params, verify=False, timeout=10)
         return response.json().get("access_token")
+        # get(地址、参数、python无需验证、10秒超时)
+        # response.json().get("access_token")
+        # requests包的内置方法json()，能直接把返回的json给dump成字典
+    #所以无需 tempDic=json.load(response),直接dictionary.get(key)就行
+    #理论上读文档得了，
+    '''大概长这样：
+    {
+  "refresh_token": "25.3f9f...xxx",
+  "expires_in": 2592000,
+  "session_key": "9mzd...xxx",
+  "access_token": "24.3f9f...xxx",
+  "scope": "brain_all_scope"
+}
+'''
     except: return None
 
 def call_baidu_ocr(img_path, token):
@@ -173,7 +188,7 @@ def process_single_task(task, token, cache_ref):
     return f"完成: {name} -> {a_int} [{match_res}]"
 
 def main():
-    print(f"--- 百度云多线程审计系统 v2.0 (线程: {MAX_WORKERS}) ---")
+    print(f"--- 百度云orc v2.0 (线程: {MAX_WORKERS}) ---")
     token = get_access_token()
     if not token:
         print("Token 获取失败，请检查 Key！")
