@@ -15,15 +15,15 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ================= 配置区 =================
-# 已替换为您提供的新 API 凭证
-BAIDU_API_KEY = "X4au4UAQNbENVpsiqtLuOa4f"
-BAIDU_SECRET_KEY = "Bhz9FJT2BMBohwDNqnWBMOBxftG83Tvk"
+# api
+BAIDU_API_KEY = ""
+BAIDU_SECRET_KEY = ""
 
 TASK_FILE = "todo_tasks.json"
 RESULT_FILE = "audit_report_final.xlsx"
 CACHE_FILE = "processed_cache.json"
 
-MAX_WORKERS = 8  # 建议 2-3 线程，既能提速又不会触发频率限制
+MAX_WORKERS = 8  # 不如直接拉满
 # ==========================================
 
 file_lock = threading.Lock()
