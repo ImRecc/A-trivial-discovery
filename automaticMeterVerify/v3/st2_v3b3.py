@@ -204,6 +204,7 @@ def main():
     else: cache = {}
 
     todo = [t for t in tasks if str(t.get('meter_id')) not in cache]
+    #是省
     print(f"待处理: {len(todo)} | 已跳过: {len(tasks)-len(todo)}")
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
