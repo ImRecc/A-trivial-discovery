@@ -1,6 +1,11 @@
 '''首先类其实就是一堆函数、变量的打包
 只不过设置为本地的话，就是这一组函数间可以直接通信
 不然就只能是全局变量了'''
+'''
+self.setup_ui()
+        threading.Thread(target=sys_ctrl.connect, args=(self,), daemon=True).start()
+        #用该线程唤醒shockSystem
+'''
 class ShockSystem:
     def __init__(self):
         self.is_paused = False
