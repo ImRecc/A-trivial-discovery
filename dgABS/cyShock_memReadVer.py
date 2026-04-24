@@ -134,6 +134,7 @@ class BridgeGUI:
 
         self.setup_ui()
         threading.Thread(target=sys_ctrl.connect, args=(self,), daemon=True).start()
+        #用该线程唤醒shockSystem
         threading.Thread(target=self.watch_file, daemon=True).start()
 
     def setup_ui(self):
@@ -244,5 +245,9 @@ class BridgeGUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    #创建最底层的主窗口对象。 canvas 4 an app
+    
     app = BridgeGUI(root)
+    
     root.mainloop()
+    #维持窗口用
