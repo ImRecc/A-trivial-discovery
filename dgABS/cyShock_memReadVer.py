@@ -123,7 +123,7 @@ sys_ctrl = ShockSystem()
 class BridgeGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("赛博刑具 V4.4 - 深度兼容版")
+        self.root.title("rMem.V4")
         self.root.geometry("1100x700")
         self.root.configure(bg="#2b2b2b") 
         self.last_val = None
