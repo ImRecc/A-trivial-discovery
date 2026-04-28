@@ -5,9 +5,9 @@ import os
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 os.makedirs('shared', exist_ok=True) # 自动创建共享文件夹
-shared_data = {"text": "欢迎！在这里打字，所有设备实时同步。"}
+shared_data = {"text": "在这里打字，所有设备实时同步。"}
 
-# 极简前端网页（内嵌在代码里，省得建多个文件）
+# 极简前端网页
 HTML = """
 <!DOCTYPE html>
 <html>
@@ -23,7 +23,7 @@ HTML = """
     <hr>
     <form action="/upload" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" style="margin-bottom: 10px;"><br>
-        <input type="submit" value="上传文件到服务端" style="padding: 10px; background: #2196F3; color: white; border: none;">
+        <input type="submit" value="上传文件到共享文件夹" style="padding: 10px; background: #2196F3; color: white; border: none;">
     </form>
     
     <hr>
@@ -51,7 +51,7 @@ HTML = """
 @app.route('/')
 def index():
     files = os.listdir('shared')
-    return render_template_string(HTML, text=shared_data["text"], files=files)
+    return render_template_string(HTML, text=shared_data["text"], webFiles=files)
 
 @socketio.on('client_send')
 def handle_message(data):
