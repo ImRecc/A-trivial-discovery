@@ -13,6 +13,8 @@ if __name__ == "__main__":
     root = tk.Tk()
     #tkinter内也有很多class A,B,C，
     #Tk作为一个类名，Tk()是一个执行之类
-    #
+    #实际上，操作的是 tk.TK.__init__(ADDRESS), root = ADDRESS
     app = MiniNasGui(root)
+    #实际上，操作的是 miniNasGui__init__(ADDRESS, root), app = ADDRESS
+    #这俩的root、app都是对应调用函数的ADDRESS赋给的值
     root.mainloop() #Event Loop,由于root管理了窗口，所以是他来掌控循环
