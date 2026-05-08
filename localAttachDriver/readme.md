@@ -22,3 +22,8 @@ class MiniNasGui:
     def __init__(this_instance, root):
         this_instance.ip_label = "xxx"
 ```
+```
+# 扫盲：get请求，会是GET /download/123456 HTTP/1.1
+#这串会被切开形成 /download/123456 存入BaseHTTPRequestHandler.path
+#.startswith() 是python的字符串的内置方法，判定某段字是不是某字符串的开头
+```
