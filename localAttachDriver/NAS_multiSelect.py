@@ -18,6 +18,10 @@ UPLOAD_DIR = "uploaded_files"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
+# 扫盲：get请求，会是GET /download/123456 HTTP/1.1
+#这串会被切开形成 /download/123456 存入BaseHTTPRequestHandler.path
+#.startswith() 是python的字符串的内置方法，判定某段字是不是某字符串的开头
+
 shared_items = {}
 shared_text = {"content": "在这里输入文字，点击同步..."}
 #python的字典，或者叫哈希表，
@@ -47,18 +51,37 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.end_headers()
+
+        items_html = "" # 先准备一个空字符串
+        # 遍历那个叫 shared_items 的哈希表（字典）
+        # tid 是文件的6位随机ID，p 是文件在电脑上的绝对路径（比如 C:/abc/test.txt）
+        for tid, p in shared_items.items():
+    
+            # os.path.basename 的作用是：把 "C:/abc/test.txt" 里的 "test.txt" 抠出来
+            filename = os.path.basename(p) 
+    
+            # 拼凑一段 HTML 代码
+            # <a> 标签在 HTML 里就是“超链接”。href 是点击后跳转的网址。
+            # <li> 是列表的一行。
+            html_line = f'<li>{filename} <a href="/download/{tid}">[下载]</a></li>'
+    
+            # 把这一行追加到总字符串里
+            items_html = items_html + html_line
         
-        items_html = "".join([f'<li>{os.path.basename(p)} <a href="/download/{tid}">[下载]</a></li>' for tid, p in shared_items.items()])
+        # 或者可以装逼一点
+        # items_html = "".join([f'<li>{os.path.basename(p)} <a href="/download/{tid}">[下载]</a></li>' for tid, p in shared_items.items()])
         
         html = f"""
         <!DOCTYPE html>
         <html>
         <head><meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- adaptive scaling, insides of <head> are invisible -->
         <style>
             body {{ font-family:sans-serif; padding:20px; background:#f4f4f9; }}
             .card {{ background:white; padding:15px; border-radius:8px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }}
             textarea {{ width:100%; height:120px; box-sizing: border-box; }}
             .btn {{ padding:10px 15px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; }}
+        <!-- .xxx{{}} means class, can be re-use for a same style -->
         </style>
         </head>
         <body>
@@ -67,6 +90,7 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
             <div class="card">
                 <h4>文本同步</h4>
                 <textarea id="text_box">{shared_text["content"]}</textarea><br>
+                <!-- {shared_text["content"]}，这是 Python 在发网页前，强行把内存里的字塞进去了。 ->
                 <button class="btn" onclick="syncText()" style="margin-top:10px;">↑↓ 同步文本</button>
             </div>
 
@@ -75,6 +99,7 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
                 <form action="/upload" method="post" enctype="multipart/form-data">
                     <!-- 这里加上了 multiple 属性，允许手机/网页多选文件 -->
                     <input type="file" name="files" multiple style="margin-bottom:10px;"><br>
+                    <!-- -->
                     <input type="submit" value="一键上传全部" class="btn" style="background:#2196F3;">
                 </form>
             </div>
@@ -87,7 +112,9 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
             <script>
                 function syncText() {{
                     var content = document.getElementById('text_box').value;
+                    <!--去网页上找到那个文本框，把里面的字抠出来，存到 content 变量里。-->
                     fetch('/sync_text', {{ method: 'POST', body: encodeURIComponent(content) }})
+                    <!--异步请求fetch，不用手动刷新-->
                     .then(() => alert('已推送到电脑！'));
                 }}
             </script>
@@ -95,12 +122,14 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
         </html>
         """
         self.wfile.write(html.encode("utf-8"))
+        # 用utf8编码写入html，python把http连接也看作文件，所以是wfile
 
     def do_POST(self):
         if self.path == "/sync_text":
             length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(length).decode('utf-8')
             shared_text["content"] = urllib.parse.unquote(post_data)
+            #urllib的意义是把%E4%BD%A0%E5%A5%BD%20%E4%B8%96%E7%95%8C这种的url编码翻译回中文与空格
             self.send_response(200); self.end_headers(); self.wfile.write(b"OK")
             return
 
@@ -230,6 +259,11 @@ class MiniNasGui:
 
     def run_server(self):
         HTTPServer(('0.0.0.0', server_port), TransparentSharingHandler).serve_forever()
+        #(a, b) 这种的是python的元组，固定长度的数组
+        #def HTTPServer(tuple(server_address, server_port), RequestHandlerClass)
+        '''在python里，一个类，className(),是照着图纸建一栋房子，把房子的地址给我
+            className，不带括号，意思是“把图纸本身交给我”传递参数
+        '''
 
 if __name__ == "__main__":
     root = tk.Tk()
