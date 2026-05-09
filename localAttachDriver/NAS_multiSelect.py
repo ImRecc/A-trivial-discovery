@@ -34,6 +34,7 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
 #继承他爹的东西
 #然后自己定义或者重写了如下do_GET,do_POST
     def do_GET(self):
+        print(self.headers)
         if self.path.startswith("/download/"):
             item_id = self.path.split("/")[-1]
             if item_id in shared_items:
@@ -90,7 +91,7 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
             <div class="card">
                 <h4>文本同步</h4>
                 <textarea id="text_box">{shared_text["content"]}</textarea><br>
-                <!-- {shared_text["content"]}，这是 Python 在发网页前，强行把内存里的字塞进去了。 ->
+                <!-- {shared_text["content"]}，这是 Python 在发网页前，强行把内存里的字塞进去了。 -->
                 <button class="btn" onclick="syncText()" style="margin-top:10px;">↑↓ 同步文本</button>
             </div>
 
@@ -99,8 +100,11 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
                 <form action="/upload" method="post" enctype="multipart/form-data">
                     <!-- 这里加上了 multiple 属性，允许手机/网页多选文件 -->
                     <input type="file" name="files" multiple style="margin-bottom:10px;"><br>
-                    <!-- -->
+                    <!-- 布尔属性,写出来就代表开启，不需要multiple = true这种 -->
+                    <!-- <input type="file"> 是系统级控件，会尝试调用系统接口，中文给"选择文件"英文给"choose file"
                     <input type="submit" value="一键上传全部" class="btn" style="background:#2196F3;">
+                    <!-- 类似还有 <input type="checkbox" checked> 表示默认就是勾选上的 -->
+
                 </form>
             </div>
 
@@ -118,6 +122,7 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
                     .then(() => alert('已推送到电脑！'));
                 }}
             </script>
+            <!-- 这些双大括号，用来避免python以为是formatted 语法执行，转义用 -->
         </body>
         </html>
         """
@@ -138,9 +143,12 @@ class TransparentSharingHandler(BaseHTTPRequestHandler):
             try:
                 length = int(self.headers['Content-Length'])
                 raw_body = self.rfile.read(length)
+                print(raw_body)
                 
                 # 伪造一个邮件头部，欺骗 email.parser 帮我们解析 HTTP 表单流
+                # 利用类似mime的邮件格式来多文件传
                 mime_msg = b"Content-Type: " + self.headers['Content-Type'].encode() + b"\r\n\r\n" + raw_body
+                #bytes"\r\n\r\n" == return + newLine * 2 = 2 newLines
                 msg = email.parser.BytesParser().parsebytes(mime_msg)
                 
                 # 遍历所有被传上来的文件
@@ -201,7 +209,7 @@ class MiniNasGui:
         self.info_label.pack(pady=5)
 
         self.tree = ttk.Treeview(root, columns=("ID", "Path"), show="headings", height=5)
-        self.tree.heading("ID", text="ID"); self.tree.heading("Path", text="路径")
+        self.tree.heading("ID", text="ID"); self.tree.heafding("Path", text="路径")
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10)
 
         btn_fm = tk.Frame(root)
@@ -209,16 +217,25 @@ class MiniNasGui:
         # 把按钮名字改了以作区分
         tk.Button(btn_fm, text="+批量共享文件", command=self.add_multiple_files).pack(side=tk.LEFT, padx=5)
         tk.Button(btn_fm, text="打开上传文件夹", command=lambda: os.startfile(UPLOAD_DIR)).pack(side=tk.LEFT, padx=5)
-
+        # command需要函数指针，如果直接os.startfile()，那么会返回执行结果
+        # lambda会
+        # def 临时函数():
+        #   os.startfile(UPLOAD_DIR)
+        #command = 临时函数
         self.check_sync()
         threading.Thread(target=self.run_server, daemon=True).start()
 
     def get_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #AF_INET代表ipv4，SOCK_DGRAM代表udp协议
         try: s.connect(("8.8.8.8", 80)); ip = s.getsockname()[0]
+        #通知系统要建立连接，然后利用s.getsocketname()[0]来获得系统用的局域网ip
         except: ip = "127.0.0.1"
         finally: s.close()
         return ip
+        '''只有with语法，
+        比如with open("file.txt") as f:
+        才会在离开缩进后自动f.close()'''
 
     def save_text(self):
         shared_text["content"] = self.text_area.get("1.0", tk.END).strip()
@@ -246,16 +263,18 @@ class MiniNasGui:
         #GUI 的 mainloop 是一个死循环，如果你用 time.sleep(1)，整个窗口就会卡死无响应。after(1000, 函数) 是 Tkinter 提供的不卡死定时器，
         #抽空执行一下 self.check_sync”。函数末尾又调了一次 after，形成了一个每秒执行一次的轮询（Polling）。
 
-    # ================= 核心升级：电脑端多选文件 =================
+    # ================= 电脑端多选文件 =================
     def add_multiple_files(self):
         # 注意这里多了一个 's'，返回的是一个元组 (包含多个路径)
         file_paths = filedialog.askopenfilenames(title="请选择一个或多个文件")
+        #tkinter 自带的弹窗库，执行后，弹出windows原生的选文件对话框、确定后返回包含文件路径的元组
         if file_paths:
             for p in file_paths:
                 # 使用 uuid 生成唯一的 6 位 ID，防止多文件同时导入时 ID 冲突
                 tid = uuid.uuid4().hex[:6]
                 shared_items[tid] = p
                 self.tree.insert("", tk.END, values=(tid, p))
+                #填入tid和文件路径
 
     def run_server(self):
         HTTPServer(('0.0.0.0', server_port), TransparentSharingHandler).serve_forever()
