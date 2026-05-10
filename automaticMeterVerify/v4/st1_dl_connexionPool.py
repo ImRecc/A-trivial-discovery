@@ -75,8 +75,10 @@ def main():
                 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
                 response = requests.get(img_url, headers=headers, timeout=15)
                 http GET 版
+                会经历完整的tcp三次握手、下载、四次挥手
                 '''
                 response = session.get(img_url, timeout=5)
+                #连接池，一直复用该tcp
                 if response.status_code == 200:
                     with open(save_path, 'wb') as img_f:
                     #write | binary
