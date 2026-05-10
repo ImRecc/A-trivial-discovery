@@ -15,7 +15,7 @@ from difflib import SequenceMatcher
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ================= 配置区 =================
-ALI_APP_CODE = "10d5fd0f043b408ca829a41a7a49d6bd"
+ALI_APP_CODE = ""
 ALI_ENDPOINT = "https://gas.market.alicloudapi.com/api/predict/gas_meter_end2end"
 
 TASK_FILE = "todo_tasks.json"
