@@ -12,6 +12,9 @@ import email.parser
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
+import qrcode
+from PIL import ImageTk  # 这是 Pillow 专门为 Tkinter 写的图像转换模块
+# pillow 和 qrcode
 
 # --- 全局配置 ---
 UPLOAD_DIR = "uploaded_files"
@@ -209,12 +212,13 @@ class MiniNasGui:
         self.info_label.pack(pady=5)
 
         self.tree = ttk.Treeview(root, columns=("ID", "Path"), show="headings", height=5)
-        self.tree.heading("ID", text="ID"); self.tree.heafding("Path", text="路径")
+        self.tree.heading("ID", text="ID"); self.tree.heading("Path", text="路径")
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10)
 
         btn_fm = tk.Frame(root)
         btn_fm.pack(pady=10)
         # 把按钮名字改了以作区分
+        tk.Button(btn_fm, text="网页二维码", command=self.show_qr, bg="#ffeb3b").pack(side=tk.LEFT, padx=5)
         tk.Button(btn_fm, text="+批量共享文件", command=self.add_multiple_files).pack(side=tk.LEFT, padx=5)
         tk.Button(btn_fm, text="打开上传文件夹", command=lambda: os.startfile(UPLOAD_DIR)).pack(side=tk.LEFT, padx=5)
         # command需要函数指针，如果直接os.startfile()，那么会返回执行结果
@@ -275,6 +279,25 @@ class MiniNasGui:
                 shared_items[tid] = p
                 self.tree.insert("", tk.END, values=(tid, p))
                 #填入tid和文件路径
+
+
+    def show_qr(self):
+        qr_text = f"http://{self.get_ip()}:{server_port}"
+        qr_img = qrcode.make(qr_text).resize((250,250))
+
+        #创建一个窗口，tkinter只支持.gif，需要pillow(pil)来翻译
+        #tk.Tk()是主窗口，tk.Toplevel()是子窗口
+        popup = tk.Toplevel(self.root)
+        popup.title("扫码可以直接访问网页端")
+        popup.geometry("300x300")
+
+        #把qrcode生成的图翻译给Tkinter
+        self.qr_photo = ImageTk.PhotoImage(qr_img)
+        # ImageTk.PhotoImage是 Pillow 专门为 Tkinter 写的图像转换模块
+
+        #塞入label，然后塞入弹窗
+        qr_label = tk.Label(popup, image=self.qr_photo)
+        qr_label.pack(expand=True)#居中
 
     def run_server(self):
         HTTPServer(('0.0.0.0', server_port), TransparentSharingHandler).serve_forever()
