@@ -6,7 +6,7 @@ import os
 import time
 
 # ================= 配置区 =================
-BASE_URL = "http://www.yndlsw.com:8001/upload"
+BASE_URL = ""
 RAW_JSON_FILE = "raw_data.json"  # F12 复制下来的原始数据[cite: 2]
 OUTPUT_DIR = "images"            # 图片保存文件夹
 TASK_FILE = "todo_tasks.json"    # 生成给脚本2用的任务清单[cite: 2]
