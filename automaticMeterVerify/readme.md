@@ -1,6 +1,6 @@
 ### 一点 request.get()的小知识：
 
-def get_access_token():
+```def get_access_token():
     url = "https://aip.baidubce.com/oauth/2.0/token"
     params = {"grant_type": "client_credentials", "client_id": BAIDU_API_KEY, "client_secret": BAIDU_SECRET_KEY}
     #baidu api要求把目的、id、密钥在网址后传递过去
@@ -26,5 +26,6 @@ def get_access_token():
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
 response = requests.get(img_url, headers=headers, timeout=15)
+```
 
 这个get干的事情是直接有完整的路径，所以只需要再搞个headers做伪装就结束了
