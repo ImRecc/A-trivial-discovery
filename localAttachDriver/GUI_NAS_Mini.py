@@ -228,7 +228,12 @@ class MiniNasGui:
         #command = 临时函数
         self.check_sync()
         threading.Thread(target=self.run_server, daemon=True).start()
-
+        #python有两种
+        #self.run_server是已绑定实例的方法对象
+        #self就自动填装了
+        #如果：target=MyClass.run_server（用类名去调），
+        #就是一个普通的函数，必须手传 self 进去：
+        #threading.Thread(target=MyClass.run_server, args=(self,))
     def get_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         #AF_INET代表ipv4，SOCK_DGRAM代表udp协议
