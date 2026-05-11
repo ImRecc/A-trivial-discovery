@@ -47,6 +47,8 @@ def main():
     start_time = time.time()
     
     for i, item in enumerate(records):
+       #enumerate(records) 会返回一个元组（序列号，数据）
+       #a, b = (0, "张三")  # a 变成 0，b 变成 "张三"
         # --- 新增过滤逻辑 ---
         reading_flag = item.get("meterReadingFlagName")
         if reading_flag == "无人":
