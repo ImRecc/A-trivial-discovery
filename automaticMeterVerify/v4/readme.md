@@ -28,7 +28,7 @@ http://0.0.0.0:8000/v1/chat/completions' \
     }
 ```
 
-这个是nvidia的，
+这个是nvidia的，\
 curl是linux的玩意，这里用了python的request.post替换 \
 ```
     X POST：代表你要寄一个包裹（而不是像 GET 那样去拿包裹）。对应 requests.post()。
@@ -45,6 +45,7 @@ curl是linux的玩意，这里用了python的request.post替换 \
     with open(media_file, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
         #找英伟达偷的
+```
 
 ##### 然后返回值：
 ```
@@ -69,7 +70,7 @@ curl是linux的玩意，这里用了python的request.post替换 \
     "total_tokens": 21
   }
 }
-
+```
 这个样子\
 
 #### 关于多线程：
