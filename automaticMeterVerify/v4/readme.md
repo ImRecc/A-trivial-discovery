@@ -45,4 +45,30 @@ curl -X 'POST' \
         return base64.b64encode(f.read()).decode("utf-8")
         #找英伟达偷的
     ```
-    
+    ##### 然后返回值：
+```
+{
+  "id": "chatcmpl-123",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "nvidia/nemotron-nano-12b-v2-vl",
+  "choices":[
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "555.0\n"  <--- 我们要的数据在这里！！！
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 12,
+    "total_tokens": 21
+  }
+}
+```这个样子
+
+####关于多线程：
+
