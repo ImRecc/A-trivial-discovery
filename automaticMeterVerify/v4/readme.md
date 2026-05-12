@@ -74,4 +74,30 @@ curl是linux的玩意，这里用了python的request.post替换 \
 这个样子\
 
 #### 关于多线程：
-
+首先是基本的 ` import threading 里的threading.Thread(funcAddress, daemon=).start()` 
+需要大量手搓管理线程 \
+常用的是 ` from concurrent.futures import ThreadPoolExecutor, as_completed `
+```
+def single_tast(val):
+with ThreadPoolExecutor(max_workers = MAX_WORKERS) as executor:
+    for i in range(10):
+        executor.submit(single_tast, i)
+#或者
+todo=[]
+with ThreadPoolExecutor(max_workers=3) as executor:
+    # 方式 A：直接传一个列表 (todo 就是一个列表)
+    executor.map(single_task, todo) 
+    
+    # 方式 B：传一个 range 序列
+    executor.map(single_task, range(10))
+#或者用字典展开式
+with ThreadPoolExecutor(max_workers=3) as executor:
+    # 完美利用字典推导式的特性，一边拉起循环，一边提交任务，一边生成字典，python是屁股先看
+    ticket_map = {executor.submit(single_task, i): i for i in range(10)}
+    
+    # 配合 as_completed 监听
+    for ticket in as_completed(ticket_map):
+        # 任务完成了
+        # 去字典里查一下就知道谁完成
+        original_i = ticket_map[ticket] 
+        print(f"参数为 {original_i} 的任务刚刚完成")
