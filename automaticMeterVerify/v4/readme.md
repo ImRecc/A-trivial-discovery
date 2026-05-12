@@ -90,6 +90,12 @@ with ThreadPoolExecutor(max_workers=3) as executor:
     
     # 方式 B：传一个 range 序列
     executor.map(single_task, range(10))
+#range(start, stop, step) 只支持整数，需要浮点数步长
+#只能while
+i = 0.0
+while i < 1.0:
+    print(i)
+    i += 0.1
 #或者用字典展开式
 with ThreadPoolExecutor(max_workers=3) as executor:
     # 完美利用字典推导式的特性，一边拉起循环，一边提交任务，一边生成字典，python是屁股先看
@@ -101,3 +107,4 @@ with ThreadPoolExecutor(max_workers=3) as executor:
         # 去字典里查一下就知道谁完成
         original_i = ticket_map[ticket] 
         print(f"参数为 {original_i} 的任务刚刚完成")
+```
