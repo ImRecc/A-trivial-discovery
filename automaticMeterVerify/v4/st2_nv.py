@@ -187,7 +187,7 @@ def process_single_task(task, cache_ref):
             errors_data[m_id]={
                 "customer_name" : name, 
                 "target_val" : target_int, 
-                "raw_ai_out" : raw_ai_out, 
+                "raw_ai_out" : raw_ai_out 
             }
             with open(ERROR_FILE, 'w', encoding='utf-8') as f:
                 # indent=4,缩进4格
