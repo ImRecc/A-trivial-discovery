@@ -184,6 +184,7 @@ class MiniNasGui:
         self.root.geometry("600x600")
         
         
+        
         self.ip_label = tk.Label(self.root, text=f"手机访问: http://{self.get_ip()}:{server_port}", font=("Arial", 12, "bold"), fg="blue")
         #哦对了，python的formatted，甚至允许一个表达式，类似c语言的“谁能写出最难度最短字符代码挑战”，所以可以{self.get_ip()}让python停下来去执行这个函数
         self.ip_label.pack(pady=10)
@@ -211,8 +212,11 @@ class MiniNasGui:
         self.info_label = tk.Label(root, text=f"上传目录: {os.path.abspath(UPLOAD_DIR)}", fg="green")
         self.info_label.pack(pady=5)
 
+        # 1. 创建表格：放到 root 里，有两列名叫 ID 和 Path，只显示表头(headings)
         self.tree = ttk.Treeview(root, columns=("ID", "Path"), show="headings", height=5)
+        # 2. 设置表头显示的文字
         self.tree.heading("ID", text="ID"); self.tree.heading("Path", text="路径")
+        # 3. 把表格塞进界面里，允许它向 X 和 Y 轴自动拉伸填充
         self.tree.pack(fill=tk.BOTH, expand=True, padx=10)
 
         btn_fm = tk.Frame(root)
