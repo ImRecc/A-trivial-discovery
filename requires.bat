@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 title Python 依赖安装器
-rem 不要搞没用的，直接 pip install pipreqs, pipreqs ./ --encoding=utf-8
+rem 不要搞没用的，直接 pip install pipreqs, pipreqs ./ --encoding=utf-8, 然后pip install -r requirements.txt
 :: 判断有无输入文件
 if "%~1"=="" (
     color 0c
