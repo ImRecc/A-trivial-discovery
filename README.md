@@ -46,3 +46,5 @@ remotePort = 6001     # <--- The port exposed on the VPS
   ```
 ```
 and use `press Ctrl+A, then D to "detach" , screen -r my_frp to go back to that exact window`
+there are screen -ls, then sreen -r id to go back
+    `ctrl+A are prefixKey, tell terminal stop sending keystroke to the terminal`
