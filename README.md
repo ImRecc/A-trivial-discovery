@@ -16,6 +16,9 @@ in local PC, frpc.toml
 serverAddr = "x"
 serverPort = 7000
 
+auth.method = "token"
+auth.token = "classical${psw}"
+
 # If you are using Clash TUN Global, you don't need the proxyURL line here.
 # Just let Clash TUN handle the routing.
 
