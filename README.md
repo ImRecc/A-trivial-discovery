@@ -3,7 +3,13 @@
 
 #### 关于port forwarding\intranet penetration
 like in vps, frps.toml
-bindPort=7000
+  ```
+    bindPort=7000
+    bindPort = 7000
+
+    auth.method = "token"
+    auth.token = "classical${psw}"
+  ```
 ./frps -c frps.toml
 in local PC, frpc.toml
 ```
