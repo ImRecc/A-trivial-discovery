@@ -36,6 +36,9 @@ remotePort = 6001     # <--- The port exposed on the VPS
 # don't forgot rise client on windows, frpc -c frpc.toml
 
 ### we could do `nohup ./frps -c frps.toml > frps.log 2>&1 &`
+1 means stdout, 2 means stderr\
+2>&1 means: "Redirect stream 2 (Error) to exactly the same place that stream 1 (Normal) is currently pointing."\
+&1 means the channel, not file name\
 ### or 
   ``` apt install screen
       screen -S my_frp    # Creates a new virtual window
