@@ -15,3 +15,48 @@ GuiReviewer/
 GUI Framework: PySide6 (Qt for Python). \
 Data I/O: openpyxl and pandas. Used for reading target values and writing audit results/cell background colors back to the .xlsx file.\
 Packaging: PyInstaller. Used to compile the Python script and UI into a standalone .exe.\
+
+#### ui
+qtlabel(text_i, img_i)来管理，然后是grid layout + vertical layout
+`pyside6-uic "water_meter r2.ui" -o ui_audit.py` 转成模块
+
+[ QMainWindow (Parent) ]
+                 ▲
+                 │ (Inherits)
+           [ AuditApp ]  ───►  [ ui_audit.py (Ui_MainWindow) ]
+                 │                  (Visual components setup)
+                 ├─► self.tasks = [] (Central State Manager)
+                 ├─► self.current_page = 0 (Pointer)
+                 └─► Event Filters (Intercepts Mouse Click on Labels)
+
+```
+for i in range(4):
+    lbl_img = getattr(self.ui, f"img_{i}")
+    lbl_img.installEventFilter(self)
+#事件过滤器，配合四次循环来匹配图片id
+```
+```
+File Dialog: Calls self.open_file_dialog() to retrieve the target Excel file path before starting the render loop.\
+QFileDialog.getOpenFileName(self, ...) 来获取文件的绝对路径
+
+openpyxl.load_workbook(file_path, data_only=False)配合
+m = re.search(r'HYPERLINK\("([^"]+)"', str(cv or ""), re.IGNORECASE)
+                    img_path = m.group(1) if m else str(cv or "")
+从excel的超链接拿图地址
+```
+This module handles how data is mapped to the screen and how state is preserved during navigation.
+code
+Code
+[ Page Index: self.current_page ]
+                                 │
+                     (Slices tasks: index * 4)
+                                 ▼
+                     [ 4 Target Task Dicts ]
+                                 │
+            ┌────────────────────┴────────────────────┐
+            ▼                                         ▼
+   [ Text & Image Loading ]                 [ State & Style Restoration ]
+   - Text -> lbl_text.setText()             - state 0 -> border: none
+   - Pixmap -> QPixmap(path)                - state 1 -> border: red
+   - Scale -> setPixmap(pix)                - state 2 -> border: blue
+
